@@ -1,16 +1,77 @@
+@font-face {
+    font-family: "FuturaLT";
+    src: url("fonts/futura-lt.otf") format("opentype");
+}
+@font-face {
+    font-family: "FuturaLTBold";
+    src: url("fonts/futura-lt-bold.otf") format("opentype");
+}
+
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    padding: 0;
+    margin: 0;
+    font-family: "FuturaLT", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+        Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+        sans-serif;
+}
+
+button {
+    font-family: "FuturaLT";
+    background-color: #222;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin: auto;
+    transition: 200ms ease-in-out;
+}
+
+button:hover {
+    background-color: #333;
+    cursor: pointer;
+}
+
+input {
+    font-family: "FuturaLT";
+    background-color: #222;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    outline: none;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: inherit;
 }
 
-* {
-  box-sizing: border-box;
+ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+}
+
+.bg-green {
+    background-color: rgb(123, 209, 123);
+}
+
+.bg-yellow {
+    background-color: rgb(255, 255, 133);
+}
+
+.bg-red {
+    background-color: rgb(255, 123, 123);
+}
+
+.bg-blue {
+    background-color: rgb(193, 193, 255);
 }
