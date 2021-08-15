@@ -10,6 +10,10 @@ function random<T>(array: T[]): T {
 
 const Twister = () => {
     const [players, setPlayers] = useLocalStorage("players", [])
+    const [originalPlayers, setOriginalPlayers] = useLocalStorage(
+        "originalPlayers",
+        []
+    )
     const [started, setStarted] = useLocalStorage("started", false)
     const [color, setColor] = useLocalStorage("color", "")
     const [instruction, setInstruction] = useLocalStorage("instruction", "")
@@ -26,6 +30,7 @@ const Twister = () => {
         currentPositions[currentPlayer][part] = newColor
         const newInstruction = `${currentPlayer} moves ${part} to ${newColor}`
         if (window !== undefined && "speechSynthesis" in window) {
+            window.speechSynthesis.cancel()
             window.speechSynthesis.speak(
                 new SpeechSynthesisUtterance(newInstruction)
             )
@@ -69,12 +74,18 @@ const Twister = () => {
                     margin: "auto",
                 }}
             >
-                <h1 style={{ fontSize: "7rem", textAlign: "center" }}>
+                <h1 style={{ fontSize: "4rem", textAlign: "center" }}>
                     Twister
                 </h1>
 
                 {started && (
-                    <p style={{ fontSize: "5rem", textAlign: "center" }}>
+                    <p
+                        style={{
+                            fontSize: "3rem",
+                            textAlign: "center",
+                            height: "9rem",
+                        }}
+                    >
                         {instruction}
                     </p>
                 )}
@@ -91,6 +102,10 @@ const Twister = () => {
                             >
                                 <button
                                     onClick={() => {
+                                        if (turn === players.length - 1) {
+                                            setTurn(players.length - 2)
+                                        }
+
                                         setPlayers((players) =>
                                             players.filter((p) => p !== player)
                                         )
@@ -103,20 +118,24 @@ const Twister = () => {
                                         })
 
                                         if (players.length === 2) {
-                                            if (
-                                                started &&
-                                                window !== undefined &&
-                                                "speechSynthesis" in window
-                                            ) {
-                                                const remainingPlayer =
-                                                    players.filter(
-                                                        (p) => p !== player
-                                                    )[0]
-                                                window.speechSynthesis.speak(
-                                                    new SpeechSynthesisUtterance(
-                                                        `I am pleased to report that ${remainingPlayer} won the awesome battle`
+                                            if (started) {
+                                                setPlayers(originalPlayers)
+
+                                                if (
+                                                    window !== undefined &&
+                                                    "speechSynthesis" in window
+                                                ) {
+                                                    const remainingPlayer =
+                                                        players.filter(
+                                                            (p) => p !== player
+                                                        )[0]
+                                                    window.speechSynthesis.cancel()
+                                                    window.speechSynthesis.speak(
+                                                        new SpeechSynthesisUtterance(
+                                                            `I am pleased to report that ${remainingPlayer} won the awesome battle`
+                                                        )
                                                     )
-                                                )
+                                                }
                                             }
                                             setStarted(false)
                                             setColor("")
@@ -139,12 +158,13 @@ const Twister = () => {
                     <>
                         <input
                             type="text"
+                            placeholder="Add a player"
                             style={{
                                 marginTop: "1rem",
                                 marginLeft: "auto",
                                 marginRight: "auto",
                                 fontSize: "larger",
-                                width: "20rem",
+                                width: "16rem",
                             }}
                             onKeyUp={(event) => {
                                 if (event.key === "Enter") {
@@ -166,38 +186,80 @@ const Twister = () => {
                                 width: "10rem",
                             }}
                             onClick={() => {
-								setStarted(true)
-								const newPositions = {}
-								for (const player of players) {
-									newPositions[player] = {
-										"left hand": null,
-										"right hand": null,
-										"left foot": null,
-										"right foot": null,
-									}
-								}
-								next(0, newPositions)
+                                if (players.length <= 1) {
+                                    if (
+                                        window !== undefined &&
+                                        "speechSynthesis" in window
+                                    ) {
+                                        window.speechSynthesis.cancel()
+                                        window.speechSynthesis.speak(
+                                            new SpeechSynthesisUtterance(
+                                                "You can't start the game without at least 2 players!"
+                                            )
+                                        )
+                                    }
+                                    return
+                                }
+
+                                setStarted(true)
+                                setOriginalPlayers(players)
+                                const newPositions = {}
+                                for (const player of players) {
+                                    newPositions[player] = {
+                                        "left hand": null,
+                                        "right hand": null,
+                                        "left foot": null,
+                                        "right foot": null,
+                                    }
+                                }
+                                next(0, newPositions)
                             }}
                         >
                             Start
                         </button>
+                        <p
+                            style={{
+                                color: "darkblue",
+                                textAlign: "center",
+                                maxWidth: "20rem",
+                                marginRight: "auto",
+                                marginLeft: "auto",
+                            }}
+                        >
+                            Add players by entering their name and pressing
+                            enter. Remove a player by clicking on their button.
+                            Start the game when ready.
+                        </p>
                     </>
                 )}
 
                 {started && (
-                    <button
-                        style={{
-                            padding: "1rem",
-                            marginTop: "1rem",
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                            fontSize: "larger",
-                            width: "10rem",
-                        }}
-                        onClick={() => next(turn, positions)}
-                    >
-                        Next
-                    </button>
+                    <>
+                        <button
+                            style={{
+                                padding: "1rem",
+                                marginTop: "1rem",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                fontSize: "larger",
+                                width: "10rem",
+                            }}
+                            onClick={() => next(turn, positions)}
+                        >
+                            Next
+                        </button>
+                        <p
+                            style={{
+                                textAlign: "center",
+                                maxWidth: "20rem",
+                                marginRight: "auto",
+                                marginLeft: "auto",
+                            }}
+                        >
+                            Click next to pass the turn. Click on a person if
+                            they got out.
+                        </p>
+                    </>
                 )}
             </div>
         </div>
